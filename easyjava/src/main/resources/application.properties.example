@@ -1,0 +1,11 @@
+# =============================================================
+# EasyJava 配置文件模板
+# 使用方法: 复制此文件为 application.properties 并填入真实值
+# 注意: application.properties 已被 .gitignore 忽略，不会提交到 Git
+# =============================================================
+
+db.driver.name=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://YOUR_HOST:3306/YOUR_DATABASE?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+db.username=YOUR_USERNAME
+db.password=YOUR_PASSWORD
+hello=java
