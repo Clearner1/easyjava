@@ -11,7 +11,7 @@ target/
 *.iws
 *.ipr
 .vscode/
-*.classpath
+*.class
 *.project
 .settings/
 
@@ -22,3 +22,7 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Sensitive configuration files
+**/application.properties
+!**/application.properties.example
