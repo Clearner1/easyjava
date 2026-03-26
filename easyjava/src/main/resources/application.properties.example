@@ -8,4 +8,3 @@ db.driver.name=com.mysql.cj.jdbc.Driver
 db.url=jdbc:mysql://YOUR_HOST:3306/YOUR_DATABASE?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
 db.username=YOUR_USERNAME
 db.password=YOUR_PASSWORD
-hello=java
