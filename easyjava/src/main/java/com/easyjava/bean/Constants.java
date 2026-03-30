@@ -6,9 +6,24 @@ import com.easyjava.utils.StringUtils;
 public class Constants {
     public static Boolean IGNORE_TABLE_PREFIX;
     public static  String SUFFIX_BEAN_PARAM;
+    public static String PATH_BASE;
+    public static String PACKAGE_BASE;
+    public static String PATH_PO;
+    public static String PATH_PARAM;
+    public static String PATH_VO;
+    public static String JAVA =  "java/";
+    public static String resources =  "resources/";
+    // com.easyjava.entity.po;
+    public static String IMPORT_PACKAGE;
     static {
         IGNORE_TABLE_PREFIX = Boolean.valueOf(PropertiesUtils.getString("ignore.table.prefix"));
         SUFFIX_BEAN_PARAM = StringUtils.uperCaseFirstLetter(PropertiesUtils.getString("suffix.bean.param"));
+        PATH_BASE = PropertiesUtils.getString("path.base");
+        PACKAGE_BASE = PropertiesUtils.getString("package.base").replace(".", "/") + "/";
+        PATH_PO = PATH_BASE + JAVA + PACKAGE_BASE + PropertiesUtils.getString("package.po").replace(".", "/");
+        PATH_PARAM = PATH_BASE + JAVA + PACKAGE_BASE + PropertiesUtils.getString("package.param").replace(".", "/");
+        PATH_VO = PATH_BASE + JAVA + PACKAGE_BASE + PropertiesUtils.getString("package.vo").replace(".", "/");
+        IMPORT_PACKAGE = PropertiesUtils.getString("package.base") + "." + PropertiesUtils.getString("package.po");
     }
     public final static String[] SQL_DATE_TIME_TYPES = new String[]{"datetime", "timestamp"};
     public final static String[] SQL_DATE_TYPES = new String[]{"date"};
@@ -18,4 +33,8 @@ public class Constants {
     public static final String[] SQL_INTEGER_TYPE = new String[]{"int", "tinyint"};
     //Long
     public static final String[] SQL_LONG_TYPE = new String[]{"bigint"};
+
+    public static void main(String[] args) {
+        System.out.println(IMPORT_PACKAGE);
+    }
 }

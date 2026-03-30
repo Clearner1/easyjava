@@ -1,5 +1,6 @@
 package com.easyjava.bean;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +25,10 @@ public class TableInfo {
     private String comment;
 
     // 生成类的 所有属性（字段名、类型、注释等）
-    private List<FieldInfo> fieldList;
+    private List<FieldInfo> fieldList = new ArrayList<>();
 
     // 用来存储表的索引信息的
-    private Map<String, List<FieldInfo>> keyIndexMap = new LinkedHashMap();
+    private Map<String, List<FieldInfo>> keyIndexMap = new LinkedHashMap<>();
 
     /**
      * 是否拥有日期 date 类型，决定是否加 import java.util.Date
