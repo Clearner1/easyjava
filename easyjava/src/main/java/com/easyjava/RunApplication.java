@@ -1,8 +1,7 @@
 package com.easyjava;
 
 import com.easyjava.bean.TableInfo;
-import com.easyjava.builder.BuildPo;
-import com.easyjava.builder.BuilderTable;
+import com.easyjava.builder.*;
 import com.easyjava.utils.JsonUtils;
 import com.easyjava.utils.PropertiesUtils;
 
@@ -14,6 +13,9 @@ public class RunApplication {
         for (TableInfo tableInfo : tableInfoList) {
             // 通过BuildPo创建Po对象
             BuildPo.execute(tableInfo);
+            BuildQuery.execute(tableInfo);
+            BuildMapper.execute(tableInfo);
         }
+        BuildBase.execute();
     }
 }

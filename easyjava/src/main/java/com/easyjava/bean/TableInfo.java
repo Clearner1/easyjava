@@ -43,4 +43,8 @@ public class TableInfo {
      */
     private Boolean haveBigDecimal;
 
+    public static void main(String[] args) {
+        TableInfo tableInfo = new TableInfo();
+        System.out.println(tableInfo.toString());
+    }
 }

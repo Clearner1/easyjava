@@ -3,25 +3,25 @@ package com.easyjava.builder;
 import com.easyjava.bean.Constants;
 import com.easyjava.bean.FieldInfo;
 import com.easyjava.bean.TableInfo;
-import com.easyjava.utils.DateUtils;
 import com.easyjava.utils.StringUtils;
-import lombok.ToString;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 创建一个类，字段与数据库表的列一一对应
  */
-public class BuildPo {
+public class BuildQuery {
     public static void execute(TableInfo tableInfo) {
-        File folder = new File(Constants.PATH_PO);
+        File folder = new File(Constants.PATH_Query);
         if (!folder.exists()) {
             // 递归创建整个不存在路径
             folder.mkdirs();
         }
-        File poFile = new File(folder, StringUtils.uperCaseFirstLetter(tableInfo.getBeanName()) + ".java");
+        String fileName = StringUtils.uperCaseFirstLetter(tableInfo.getBeanName()) + Constants.SUFFIX_BEAN_QUERY;
+        File poFile = new File(folder,  fileName  + ".java");
         if (!poFile.exists()) {
             try {
                 poFile.createNewFile();
@@ -41,7 +41,7 @@ public class BuildPo {
             outw = new OutputStreamWriter(out, "utf8");
             bw = new BufferedWriter(outw);
             // 导包
-            bw.write("package " + Constants.PACKAGE_PO + ";");
+            bw.write("package " + Constants.PACKAGE_Query + ";");
             bw.newLine();
             bw.newLine();
             bw.write("import java.io.Serializable;");
@@ -71,39 +71,52 @@ public class BuildPo {
             }
             bw.newLine();
             // 构建类的注释
-            BuildComments.createClassComment(bw, tableInfo.getComment());
-            bw.write("public class " + StringUtils.uperCaseFirstLetter(tableInfo.getBeanName()) + " implements Serializable {");
+            BuildComments.createClassComment(bw, tableInfo.getComment() + "查询对象");
+            bw.write("public class " + StringUtils.uperCaseFirstLetter(tableInfo.getBeanName()) + Constants.SUFFIX_BEAN_QUERY + " {");
             bw.newLine();
+            // 添加额外列表
+            ArrayList<FieldInfo> extendedList = new ArrayList<>();
             for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
                 // 构建字段的注释
                 BuildComments.createFieldComment(bw, fieldInfo.getComment());
-                // ArrayUtils.contains(数组, 要找的元素) -> 判断一个数组中是否包含某个特定的元素
-                // 如果 每一个字段中的SQL类型是在SQL_DATE_TIME_TYPES数组中，那么输入对应的日期格式
-                if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, fieldInfo.getSqlType())) {
-                    bw.write("\t" + String.format(Constants.BEAN_DATE_FORMAT_EXPRESSION, DateUtils.YYYY_MM_DD_HH_MM_SS));
-                    bw.newLine();
-                    bw.write("\t" + String.format(Constants.BEAN_DATE_UNFORMAT_EXPRESSION, DateUtils.YYYY_MM_DD_HH_MM_SS));
-                    bw.newLine();
-                }
-
-                if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, fieldInfo.getSqlType())) {
-                    bw.write("\t" + String.format(Constants.BEAN_DATE_FORMAT_EXPRESSION, DateUtils.YYYY_MM_DD));
-                    bw.newLine();
-                    bw.write("\t" + String.format(Constants.BEAN_DATE_UNFORMAT_EXPRESSION, DateUtils.YYYY_MM_DD));
-                    bw.newLine();
-                }
-
-                if (ArrayUtils.contains(Constants.IGNORE_BEAN_TOJSON_FIELD, fieldInfo.getPropertyName())) {
-                    bw.write("\t" + Constants.IGNORE_BEAN_TOJSON_EXPRESSION);
-                    bw.newLine();
-                }
                 bw.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName() + ";");
+                bw.newLine();
+
+                // String类型的字段转换模糊搜索
+                // 将其添加到tableInfo.getFieldList()
+                if (ArrayUtils.contains(Constants.SQL_STRING_TYPE, fieldInfo.getSqlType())) {
+                    bw.newLine();
+                    bw.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_FUZZY + ";");
+                    FieldInfo fuzzy = new FieldInfo();
+                    fuzzy.setJavaType(fieldInfo.getJavaType());
+                    fuzzy.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_FUZZY);
+                    extendedList.add(fuzzy);
+                }
+
+                // 时间的起止搜索
+                if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, fieldInfo.getSqlType()) || ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, fieldInfo.getSqlType())) {
+                    bw.newLine();
+                    bw.write("\tprivate String " + fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_START + ";");
+                    bw.newLine();
+                    bw.newLine();
+                    bw.write("\tprivate String " + fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_END + ";");
+                    FieldInfo timeStart = new FieldInfo();
+                    timeStart.setJavaType("String");
+                    timeStart.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_START);
+                    extendedList.add(timeStart);
+
+                    FieldInfo timeEnd = new FieldInfo();
+                    timeEnd.setJavaType("String");
+                    timeEnd.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_END);
+                    extendedList.add(timeEnd);
+                }
                 bw.newLine();
                 bw.newLine();
             }
+            List<FieldInfo> fieldList = tableInfo.getFieldList();
+            fieldList.addAll(extendedList);
 
-
-            for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+            for (FieldInfo fieldInfo : fieldList) {
                 String tempField = StringUtils.uperCaseFirstLetter(fieldInfo.getPropertyName());
                 // Set方法
                 bw.write("\tpublic void set" + tempField + "(" + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName() + ") {" );
@@ -112,6 +125,7 @@ public class BuildPo {
                 bw.newLine();
                 bw.write("\t}");
                 bw.newLine();
+
                 bw.newLine();
                 // Get方法
                 bw.write("\tpublic " + fieldInfo.getJavaType() + " get" + tempField + "() {");
@@ -122,39 +136,6 @@ public class BuildPo {
                 bw.newLine();
                 bw.newLine();
             }
-
-            // toString方法
-            StringBuffer toString = new StringBuffer();
-            Integer index = 0;
-            for (FieldInfo field : tableInfo.getFieldList()) {
-                index++;
-
-                String properName = field.getPropertyName();
-
-                if (ArrayUtils.contains(Constants.SQL_DATE_TIME_TYPES, field.getSqlType())) {
-                    properName = "DateUtils.format(" + properName + ", DateTimePatternEnum.YYYY_MM_DD_HH_MM_SS.getPattern())";
-                } else if (ArrayUtils.contains(Constants.SQL_DATE_TYPES, field.getSqlType())){
-                    properName = "DateUtils.format(" + properName + ", DateTimePatternEnum.YYYY_MM_DD.getPattern())";
-                }
-
-                toString.append(field.getComment() + ":\" + (" + field.getPropertyName()
-                        + " == null ? \"空\" : " + properName + ")");
-                if (index < tableInfo.getFieldList().size()) {
-                    toString.append(" + ").append("\"," + "\" + \n\t\t\t\t\"");
-
-                }
-            }
-            String toStringStr = toString.toString();
-            toStringStr = "\"" + toStringStr;
-            bw.write("\t@Override");
-            bw.newLine();
-            bw.write("\tpublic String toString() " + "{");
-            bw.newLine();
-            bw.write("\t\treturn " + toStringStr + ";");
-            bw.newLine();
-            bw.write("\t}");
-            bw.newLine();
-            bw.newLine();
 
             bw.write("}");
             bw.flush();

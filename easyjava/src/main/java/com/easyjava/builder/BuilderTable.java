@@ -80,11 +80,12 @@ public class BuilderTable {
                 tableInfo.setTableName(tableName);
                 tableInfo.setBeanName(beanName);
                 tableInfo.setComment(comment);
-                tableInfo.setBeanParaName(beanName + Constants.SUFFIX_BEAN_PARAM);
+                tableInfo.setBeanParaName(beanName + Constants.SUFFIX_BEAN_QUERY);
                 // 获取表所有字段信息
                 List<FieldInfo> fieldInfoList = readFieldInfo(tableInfo);
                 tableInfo.setFieldList(fieldInfoList);
                 tableInfoList.add(readIndexInfo(tableInfo));
+//                System.out.println(JsonUtils.convertObj2Json(tableInfo));
             }
         } catch (Exception e) {
             logger.error("读取表信息失败", e);
@@ -289,6 +290,6 @@ public class BuilderTable {
     }
 
     public static void main(String[] args) {
-        System.out.println(BuilderTable.processField("product_info", true));
+//        BuilderTable.getTables();
     }
 }
