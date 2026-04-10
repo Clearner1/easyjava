@@ -1,4 +1,4 @@
-package com.easyjava.entity.po;
+package com.easyjava.entity.query;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @author Zane
  * @Description 商品信息表
- * @date 2026/4/1
+ * @date 2026/3/31
  */
-public class ProductInfo implements Serializable {
+public class productInfo implements Serializable {
 	/**
 	 * 商品ID
 	 */
