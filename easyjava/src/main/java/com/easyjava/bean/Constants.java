@@ -111,6 +111,6 @@ public class Constants {
     public static final String[] SQL_LONG_TYPE = new String[] { "bigint" };
 
     public static void main(String[] args) {
-        System.out.println(PATH_Mapper_XML);
+        System.out.println(PACKAGE_PO);
     }
 }
