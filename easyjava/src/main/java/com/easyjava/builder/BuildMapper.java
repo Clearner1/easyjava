@@ -95,6 +95,29 @@ public class BuildMapper {
             bw.flush();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (outw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (outw != null) {
+                try {
+                    outw.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @author Zane
  * @Description 商品信息表查询对象
- * @date 2026/4/1
+ * @date 2026/4/10
  */
 public class ProductInfoQuery {
 	/**

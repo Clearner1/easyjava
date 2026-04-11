@@ -14,12 +14,14 @@ public class Constants {
 
     // ==================== 路径相关 ====================
     public static String PATH_BASE;
+    public static String PATH_BASE_RESOURCE;
     public static String PATH_PO;
     public static String PATH_Query;
     public static String PATH_VO;
     public static String PATH_Utils;
     public static String PATH_Enums;
     public static String PATH_Mapper;
+    public static String PATH_Mapper_XML;
 
     // ==================== 包名相关 ====================
     public static String PACKAGE_BASE;
@@ -67,11 +69,13 @@ public class Constants {
 
         // ==================== 路径相关 ====================
         PATH_BASE = PropertiesUtils.getString("path.base");
+        PATH_BASE_RESOURCE = PropertiesUtils.getString("path.base");
         PATH_BASE = PATH_BASE + PATH_JAVA;
 
         PATH_PO = PATH_BASE + "/" + PACKAGE_PO.replace(".", "/");
         PATH_Utils = PATH_BASE + "/" + PACKAGE_UTILS.replace(".", "/");
         PATH_Mapper = PATH_BASE + "/" + PACKAGE_MAPPER.replace(".", "/");
+        PATH_Mapper_XML = PATH_BASE_RESOURCE  + RESOURCES + "/" + PACKAGE_MAPPER.replace(".", "/");
         PATH_Enums = PATH_BASE + "/" + PACKAGE_ENUMS.replace(".", "/");
         PATH_Query = PATH_BASE + "/" + PACKAGE_Query.replace(".", "/");
         COMMENT_AUTHOR = PropertiesUtils.getString("comment.author");
@@ -107,6 +111,6 @@ public class Constants {
     public static final String[] SQL_LONG_TYPE = new String[] { "bigint" };
 
     public static void main(String[] args) {
-        System.out.println(PATH_Mapper);
+        System.out.println(PATH_Mapper_XML);
     }
 }
