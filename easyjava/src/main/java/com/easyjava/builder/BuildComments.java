@@ -17,7 +17,7 @@ public class BuildComments {
             bw.newLine();
             bw.write(" * @Description " + comment);
             bw.newLine();
-            bw.write(" * @date " + DateUtils.dataFormat(new Date(), DateUtils._YYYY_MM_DD));
+            bw.write(" * @date " + DateUtils.dateFormat(new Date(), DateUtils._YYYY_MM_DD));
             bw.newLine();
             bw.write(" */");
             bw.newLine();

@@ -17,8 +17,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-public class BuilderTable {
-    private static final Logger logger = LoggerFactory.getLogger(BuilderTable.class);
+public class BuildTable {
+    private static final Logger logger = LoggerFactory.getLogger(BuildTable.class);
     private static Connection conn = null;
 
     private static String SQL_SHOW_TABLE_STATUS = "show table status";
@@ -74,7 +74,7 @@ public class BuilderTable {
                     beanName = tableName.substring(beanName.indexOf("_") + 1);
                 }
                 // processField -> product_info -> ProductInfo
-                beanName = BuilderTable.processField(beanName, false);
+                beanName = BuildTable.processField(beanName, false);
                 // 获取ProductInfo类的名字之后，开始填充表的元信息
                 TableInfo tableInfo = new TableInfo();
                 tableInfo.setTableName(tableName);
@@ -85,7 +85,8 @@ public class BuilderTable {
                 List<FieldInfo> fieldInfoList = readFieldInfo(tableInfo);
                 tableInfo.setFieldList(fieldInfoList);
                 tableInfoList.add(readIndexInfo(tableInfo));
-//                System.out.println(JsonUtils.convertObj2Json(tableInfo));
+                // TODO
+                //System.out.println(JsonUtils.convertObj2Json(tableInfo));
             }
         } catch (Exception e) {
             logger.error("读取表信息失败", e);
@@ -290,6 +291,6 @@ public class BuilderTable {
     }
 
     public static void main(String[] args) {
-//        BuilderTable.getTables();
+        BuildTable.getTables();
     }
 }
