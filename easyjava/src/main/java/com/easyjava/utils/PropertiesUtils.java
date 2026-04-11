@@ -2,6 +2,8 @@ package com.easyjava.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,7 +20,7 @@ public class PropertiesUtils {
             // 通过类加载器，从 classpath 根目录下找application.properties，返回输入流
             // classpath 根目录就是 target/classes
             is = PropertiesUtils.class.getClassLoader().getResourceAsStream("application.properties");
-            props.load(is); // 解析器解析配置文件
+            props.load(new InputStreamReader(is, StandardCharsets.UTF_8)); // 使用UTF-8编码读取配置文件
 
             Iterator<Object> iterator = props.keySet().iterator();
             while (iterator.hasNext()) {
