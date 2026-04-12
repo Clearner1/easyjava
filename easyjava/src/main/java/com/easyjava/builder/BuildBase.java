@@ -21,14 +21,29 @@ public class BuildBase {
         // package
         List<String> headerInfoList = new ArrayList<>();
         headerInfoList.add(Constants.PACKAGE_ENUMS);
-        BuildBase.build("DateTimePatternEnum", Constants.PATH_Enums, headerInfoList);
+        BuildBase.build("DateTimePatternEnum", Constants.PATH_ENUMS, headerInfoList);
+
         headerInfoList.clear();
         headerInfoList.add(Constants.PACKAGE_UTILS);
-        BuildBase.build("DateUtils", Constants.PATH_Utils, headerInfoList);
+        BuildBase.build("DateUtils", Constants.PATH_UTILS, headerInfoList);
+
         headerInfoList.clear();
         headerInfoList.add(Constants.PACKAGE_MAPPER);
-        BuildBase.build("BaseMapper", Constants.PATH_Mapper, headerInfoList);
+        BuildBase.build("BaseMapper", Constants.PATH_MAPPER, headerInfoList);
 
+        headerInfoList.clear();
+        headerInfoList.add(Constants.PACKAGE_ENUMS);
+        BuildBase.build("PageSize", Constants.PATH_ENUMS, headerInfoList);
+
+        //import com.easyjava.enums.PageSize;
+        headerInfoList.clear();
+        headerInfoList.add(Constants.PACKAGE_QUERY);
+        headerInfoList.add(Constants.PACKAGE_ENUMS + ".PageSize");
+        BuildBase.build("SimplePage", Constants.PATH_QUERY, headerInfoList);
+
+        headerInfoList.clear();
+        headerInfoList.add(Constants.PACKAGE_QUERY);
+        BuildBase.build("BaseQuery", Constants.PATH_QUERY, headerInfoList);
     }
 
 
@@ -40,7 +55,11 @@ public class BuildBase {
             // 3. 拼接 header 信息 导包
             StringBuilder sb = new StringBuilder();
             for (String head : headerInfoList) {
-                sb.append("package ").append(head).append(";\n").append("\n");
+                if (head.endsWith("PageSize")) {
+                    sb.append("import ").append(head).append(";\n").append("\n");
+                } else {
+                    sb.append("package ").append(head).append(";\n").append("\n");
+                }
             }
 
             // 3. 拼接模板内容

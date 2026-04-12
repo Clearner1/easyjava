@@ -3,7 +3,9 @@ package com.easyjava.builder;
 import com.easyjava.bean.Constants;
 import com.easyjava.bean.FieldInfo;
 import com.easyjava.bean.TableInfo;
+import com.easyjava.utils.JsonUtils;
 import com.easyjava.utils.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class BuildMapperXML {
     private static final Logger logger = LoggerFactory.getLogger(BuildBase.class);
@@ -53,9 +56,9 @@ public class BuildMapperXML {
             FieldInfo idField = null;
 
             bw.newLine();
-            bw.write("\t\t<!--实体映射-->");
+            bw.write("\t<!--实体映射-->");
             bw.newLine();
-            String poPath = Constants.PACKAGE_PO + "." + tableInfo.getBeanName();
+            String poPath = Constants.PACKAGE_PO + "." + StringUtils.uperCaseFirstLetter(tableInfo.getBeanName());
             bw.write("\t<resultMap id=\"base_result_map\" type=\"" + poPath + "\">");
             bw.newLine();
 
@@ -77,7 +80,7 @@ public class BuildMapperXML {
                 if (fieldInfo.getPropertyName().equals(primaryKey.getPropertyName())) {
                     bw.write("\t\t<id column=\"id\" property=\"id\"/>");
                 } else {
-                    bw.write("\t\t<result column=\" " + fieldInfo.getFieldName() + "\" property=\"" + fieldInfo.getPropertyName() + "\"/>");
+                    bw.write("\t\t<result column=\"" + fieldInfo.getFieldName() + "\" property=\"" + fieldInfo.getPropertyName() + "\"/>");
                 }
                 bw.newLine();
             }
@@ -95,7 +98,7 @@ public class BuildMapperXML {
             Iterator<FieldInfo> iterator = tableInfo.getFieldList().iterator();
             while (iterator.hasNext()) {
                 FieldInfo fieldInfo = iterator.next();
-                sb.append(fieldInfo.getPropertyName());
+                sb.append(fieldInfo.getFieldName());
                 if (iterator.hasNext()) {
                     sb.append(",");
                 }
@@ -107,29 +110,104 @@ public class BuildMapperXML {
 
 
             // <!-- 基础查询条件 -->
-            bw.write("\t\t\t<!-- 基础查询条件 -->");
+            bw.write("\t\t<!-- 基础查询条件 -->");
             String base_query_condition = "base_query_condition";
             bw.newLine();
             bw.write("\t\t<sql id=\"" + base_query_condition + "\">");
             bw.newLine();
 
-            Iterator<FieldInfo> iterator2 = tableInfo.getFieldList().iterator();
-            while (iterator2.hasNext()) {
-                FieldInfo fieldInfo = iterator2.next();
-                if (fieldInfo.getJavaType() != "String") {
-                    bw.write("\t\t\t<if test=\"query." + fieldInfo.getPropertyName() + "!= null\">");
+            for (FieldInfo fieldInfo : tableInfo.getFieldList()) {
+                if (!Objects.equals(fieldInfo.getJavaType(), "String")) {
+                    bw.write("\t\t\t<if test=\"query." + fieldInfo.getPropertyName() + " != null\">");
                 } else {
-                    bw.write("\t\t\t<if test=\"query." + fieldInfo.getPropertyName() + "!= null and query."+ fieldInfo.getPropertyName()  + "!= ''\">");
+                    bw.write("\t\t\t<if test=\"query." + fieldInfo.getPropertyName() + " != null and query." + fieldInfo.getPropertyName() + "!= ''\">");
                 }
                 bw.newLine();
-                bw.write("\t\t\t\tand " + fieldInfo.getPropertyName() + "= #{query." + fieldInfo.getPropertyName() + "}");
+                bw.write("\t\t\t\tand " + fieldInfo.getFieldName() + "= #{query." + fieldInfo.getPropertyName() + "}");
                 bw.newLine();
                 bw.write("\t\t\t</if>");
                 bw.newLine();
+            }
 
+            bw.write("\t\t</sql>\n");
+            bw.newLine();
+            // <!-- 扩展查询条件 -->
+            bw.write("\t\t<!-- 扩展查询条件 -->");
+            bw.newLine();
+            String base_query_condition_extend = "base_query_condition_extend";
+            bw.write("\t\t<sql id=\"" + base_query_condition_extend + "\">");
+            bw.newLine();
+
+            //System.out.println(JsonUtils.convertObj2Json(tableInfo.getExtendedfieldList()));
+            for (FieldInfo fieldInfo : tableInfo.getExtendedfieldList()) {
+                // TODO 代码冗余
+                if (ArrayUtils.contains(Constants.SQL_STRING_TYPE, fieldInfo.getSqlType())) {
+                    bw.write("\t\t\t<if test=\"query." + fieldInfo.getPropertyName() + " != null" + " and query." + fieldInfo.getPropertyName() + " != '' " +"\">");
+                    bw.newLine();
+                    bw.write("\t\t\t\tand " + fieldInfo.getFieldName() + " like concat {'%', #{query." + fieldInfo.getPropertyName() + "}, '%'}");
+                } else {
+                    bw.write("\t\t\t<if test=\"query." + fieldInfo.getPropertyName() + " != null and query." + fieldInfo.getPropertyName() + " != ''\">");
+                    bw.newLine();
+                    if (fieldInfo.getPropertyName().endsWith(Constants.SUFFIX_BEAN_QUERY_TIME_START)){
+                        bw.write("\t\t\t\t<![CDATA[ and " + fieldInfo.getFieldName() + " >= str_to_date(#{query." + fieldInfo.getPropertyName() + "}, '%Y-%m-%d') ]]>");
+                    } else if (fieldInfo.getPropertyName().endsWith(Constants.SUFFIX_BEAN_QUERY_TIME_END)) {
+                        bw.write("\t\t\t\t<![CDATA[ and " + fieldInfo.getFieldName() + " < date_sub(str_to_date(#{query." + fieldInfo.getPropertyName() + "}, '%Y-%m-%d')" + ", interval -1 day) " +  "]]>");
+                    }
+                }
+                bw.newLine();
+                bw.write("\t\t\t</if>");
+                bw.newLine();
             }
             bw.write("\t\t</sql>\n");
+            bw.newLine();
 
+            // <!-- 通用查询条件 -->
+            String query_condition = "query_condition";
+            bw.write("\t<sql id=\"" + query_condition + "\">");
+            bw.newLine();
+            bw.write("\t\t<where>");
+            bw.newLine();
+            bw.write("\t\t\t<include refid=\""+ base_query_condition +"\"/>");
+            bw.newLine();
+            bw.write("\t\t\t<include refid=\"" + base_query_condition_extend +"\"/>");
+            bw.newLine();
+            bw.write("\t\t</where>");
+            bw.newLine();
+            bw.write("\t</sql>");
+            bw.newLine();
+            bw.newLine();
+            // <!-- 查询列表 -->
+            bw.write("\t<!-- 查询列表 -->");
+            bw.newLine();
+            bw.write("\t<select id=\"selectList\" resultMap=\"base_result_map\">");
+            bw.newLine();
+            bw.write("\t\tSELECT <include refid=\"" + base_column_list +"\"/> FROM " + tableInfo.getTableName() + " <include refid=\"" + query_condition + "\"/>");
+            bw.newLine();
+            bw.write("\t\t<if test=\"query.orderBy != null\"> order by ${query.orderBy} </if>");
+            bw.newLine();
+            bw.write("\t\t<if test=\"query.simplePage != null\"> limit ${query.simplePage.start}, ${query.simplePage.end} </if>");
+            bw.newLine();
+            bw.write("\t</select>");
+            bw.newLine();
+            bw.newLine();
+
+            // <!-- 查询数量 -->
+            bw.write("\t<!-- 查询数量 -->");
+            bw.newLine();
+            bw.write("\t<select id=\"selectCount\" resultType=\"java.lang.Integer\">");
+            bw.newLine();
+            bw.write("\t\tSELECT COUNT(1) FROM " + tableInfo.getTableName());
+            bw.newLine();
+            bw.write("\t\t<include refid=\"query_condition\"/>");
+            bw.newLine();
+            bw.write("\t</select>");
+            bw.newLine();
+
+            // <!-- 单条插入 (匹配有值的字段) -->
+            //bw.write("\t<!-- 单条插入 (匹配有值的字段) -->");
+            bw.newLine();
+            //com.easyjava.entity.po.ProductInfo
+            //bw.write("<insert id=\"insert\" parameterType=\"" + Constants.PACKAGE_PO +"\">");
             bw.write("</mapper>");
             bw.flush();
         } catch (IOException e) {

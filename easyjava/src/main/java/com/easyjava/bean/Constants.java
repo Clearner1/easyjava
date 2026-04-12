@@ -16,11 +16,11 @@ public class Constants {
     public static String PATH_BASE;
     public static String PATH_BASE_RESOURCE;
     public static String PATH_PO;
-    public static String PATH_Query;
+    public static String PATH_QUERY;
     public static String PATH_VO;
-    public static String PATH_Utils;
-    public static String PATH_Enums;
-    public static String PATH_Mapper;
+    public static String PATH_UTILS;
+    public static String PATH_ENUMS;
+    public static String PATH_MAPPER;
     public static String PATH_Mapper_XML;
 
     // ==================== 包名相关 ====================
@@ -29,7 +29,7 @@ public class Constants {
     public static String PACKAGE_UTILS;
     public static String PACKAGE_MAPPER;
     public static String PACKAGE_ENUMS;
-    public static String PACKAGE_Query;
+    public static String PACKAGE_QUERY;
     public static String PACKAGE_PARAM;
 
 
@@ -63,7 +63,7 @@ public class Constants {
         PACKAGE_UTILS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.utils");
         PACKAGE_MAPPER = PACKAGE_BASE + "." + PropertiesUtils.getString("package.mapper");
         PACKAGE_ENUMS = PACKAGE_BASE + "." + PropertiesUtils.getString("package.enums");
-        PACKAGE_Query = PACKAGE_BASE + "." + PropertiesUtils.getString("package.query");
+        PACKAGE_QUERY = PACKAGE_BASE + "." + PropertiesUtils.getString("package.query");
         PACKAGE_PARAM = PropertiesUtils.getString("bean.package.param");
 
 
@@ -73,11 +73,11 @@ public class Constants {
         PATH_BASE = PATH_BASE + PATH_JAVA;
 
         PATH_PO = PATH_BASE + "/" + PACKAGE_PO.replace(".", "/");
-        PATH_Utils = PATH_BASE + "/" + PACKAGE_UTILS.replace(".", "/");
-        PATH_Mapper = PATH_BASE + "/" + PACKAGE_MAPPER.replace(".", "/");
+        PATH_UTILS = PATH_BASE + "/" + PACKAGE_UTILS.replace(".", "/");
+        PATH_MAPPER = PATH_BASE + "/" + PACKAGE_MAPPER.replace(".", "/");
         PATH_Mapper_XML = PATH_BASE_RESOURCE  + RESOURCES + "/" + PACKAGE_MAPPER.replace(".", "/");
-        PATH_Enums = PATH_BASE + "/" + PACKAGE_ENUMS.replace(".", "/");
-        PATH_Query = PATH_BASE + "/" + PACKAGE_Query.replace(".", "/");
+        PATH_ENUMS = PATH_BASE + "/" + PACKAGE_ENUMS.replace(".", "/");
+        PATH_QUERY = PATH_BASE + "/" + PACKAGE_QUERY.replace(".", "/");
         COMMENT_AUTHOR = PropertiesUtils.getString("comment.author");
         // ==================== 暂时未用到 ====================
         // PATH_PARAM = PATH_BASE + PATH_JAVA + "/" + PACKAGE_BASE +

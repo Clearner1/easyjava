@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class BuildQuery {
     public static void execute(TableInfo tableInfo) {
-        File folder = new File(Constants.PATH_Query);
+        File folder = new File(Constants.PATH_QUERY);
         if (!folder.exists()) {
             // 递归创建整个不存在路径
             folder.mkdirs();
@@ -41,7 +41,7 @@ public class BuildQuery {
             outw = new OutputStreamWriter(out, "utf8");
             bw = new BufferedWriter(outw);
             // 导包
-            bw.write("package " + Constants.PACKAGE_Query + ";");
+            bw.write("package " + Constants.PACKAGE_QUERY + ";");
             bw.newLine();
             bw.newLine();
             bw.write("import java.io.Serializable;");
@@ -72,7 +72,8 @@ public class BuildQuery {
             bw.newLine();
             // 构建类的注释
             BuildComments.createClassComment(bw, tableInfo.getComment() + "查询对象");
-            bw.write("public class " + StringUtils.uperCaseFirstLetter(tableInfo.getBeanName()) + Constants.SUFFIX_BEAN_QUERY + " {");
+
+            bw.write("public class " + StringUtils.uperCaseFirstLetter(tableInfo.getBeanName()) + Constants.SUFFIX_BEAN_QUERY + " extends BaseQuery " + " {");
             bw.newLine();
             // 添加额外列表
             ArrayList<FieldInfo> extendedList = new ArrayList<>();
@@ -89,6 +90,8 @@ public class BuildQuery {
                     bw.write("\tprivate " + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_FUZZY + ";");
                     FieldInfo fuzzy = new FieldInfo();
                     fuzzy.setJavaType(fieldInfo.getJavaType());
+                    fuzzy.setSqlType(fieldInfo.getSqlType());
+                    fuzzy.setFieldName(fieldInfo.getFieldName());
                     fuzzy.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_FUZZY);
                     extendedList.add(fuzzy);
                 }
@@ -102,11 +105,15 @@ public class BuildQuery {
                     bw.write("\tprivate String " + fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_END + ";");
                     FieldInfo timeStart = new FieldInfo();
                     timeStart.setJavaType("String");
+                    timeStart.setSqlType(fieldInfo.getSqlType());
+                    timeStart.setFieldName(fieldInfo.getFieldName());
                     timeStart.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_START);
                     extendedList.add(timeStart);
 
                     FieldInfo timeEnd = new FieldInfo();
                     timeEnd.setJavaType("String");
+                    timeEnd.setSqlType(fieldInfo.getSqlType());
+                    timeEnd.setFieldName(fieldInfo.getFieldName());
                     timeEnd.setPropertyName(fieldInfo.getPropertyName() + Constants.SUFFIX_BEAN_QUERY_TIME_END);
                     extendedList.add(timeEnd);
                 }
@@ -114,6 +121,7 @@ public class BuildQuery {
                 bw.newLine();
             }
             List<FieldInfo> fieldList = tableInfo.getFieldList();
+            tableInfo.setExtendedfieldList(extendedList);
             buildGetSet(bw, fieldList);
             buildGetSet(bw, extendedList);
             bw.write("}");

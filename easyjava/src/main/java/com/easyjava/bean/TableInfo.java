@@ -27,6 +27,9 @@ public class TableInfo {
     // 生成类的 所有属性（字段名、类型、注释等）
     private List<FieldInfo> fieldList = new ArrayList<>();
 
+    // 扩展用于模糊查询的类
+    private List<FieldInfo> extendedfieldList = new ArrayList<>();
+
     // 用来存储表的索引信息的
     private Map<String, List<FieldInfo>> keyIndexMap = new LinkedHashMap<>();
 

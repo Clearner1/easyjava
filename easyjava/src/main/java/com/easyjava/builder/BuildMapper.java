@@ -15,7 +15,7 @@ public class BuildMapper {
     private static final Logger logger = LoggerFactory.getLogger(BuildBase.class);
 
     public static void execute(TableInfo tableInfo) {
-        File folder = new File(Constants.PATH_Mapper);
+        File folder = new File(Constants.PATH_MAPPER);
         if (!folder.exists()) {
             // 递归创建整个不存在路径
             folder.mkdirs();
