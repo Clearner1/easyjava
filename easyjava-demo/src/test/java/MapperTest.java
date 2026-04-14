@@ -1,7 +1,9 @@
 import com.easyjava.RunDemoApplication;
 import com.easyjava.entity.po.ProductInfo;
 import com.easyjava.entity.query.ProductInfoQuery;
+import com.easyjava.entity.vo.PaginationResultVO;
 import com.easyjava.mappers.ProductInfoMapper;
+import com.easyjava.service.ProductInfoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,9 @@ public class MapperTest {
 
     @Autowired
     private ProductInfoMapper<ProductInfo, ProductInfoQuery> productInfoMapper;
+
+    @Autowired
+    private ProductInfoService productInfoService;
 
     private static final Random random = new Random();
 
@@ -506,5 +511,392 @@ public class MapperTest {
         System.out.println("时间范围查询结果数量: " + list.size());
 
         System.out.println("========== 时间范围查询测试完成 ==========\n");
+    }
+
+    // ==================== Service 方法测试 ====================
+
+    /**
+     * 测试 Service - findListByParam
+     */
+    @Test
+    public void testServiceFindListByParam() {
+        System.out.println("========== 测试 Service findListByParam ==========");
+        ProductInfoQuery query = new ProductInfoQuery();
+        query.setCodeFuzzy("T");
+        List<ProductInfo> list = productInfoService.findListByParam(query);
+        System.out.println("查询结果数量: " + list.size());
+        System.out.println("========== findListByParam 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - findCountByParam
+     */
+    @Test
+    public void testServiceFindCountByParam() {
+        System.out.println("========== 测试 Service findCountByParam ==========");
+        ProductInfoQuery query = new ProductInfoQuery();
+        query.setCodeFuzzy("T");
+        Integer count = productInfoService.findCountByParam(query);
+        System.out.println("查询数量: " + count);
+        System.out.println("========== findCountByParam 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - findListByPage
+     */
+    @Test
+    public void testServiceFindListByPage() {
+        System.out.println("========== 测试 Service findListByPage ==========");
+        ProductInfoQuery query = new ProductInfoQuery();
+        query.setPageNo(1);
+        query.setPageSize(5);
+        PaginationResultVO<ProductInfo> result = productInfoService.findListByPage(query);
+        System.out.println("总数: " + result.getTotalCount());
+        System.out.println("页码: " + result.getPageNo());
+        System.out.println("每页数量: " + result.getPageSize());
+        System.out.println("总页数: " + result.getPageTotal());
+        System.out.println("当前页数据量: " + result.getList().size());
+        System.out.println("========== findListByPage 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - add
+     */
+    @Test
+    public void testServiceAdd() {
+        System.out.println("========== 测试 Service add ==========");
+        int[] skuColor = randomSkuColor();
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(randomCode());
+        productInfo.setCompanyId("C_SERVICE");
+        productInfo.setProductName("Service测试-ADD");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+
+        Integer result = productInfoService.add(productInfo);
+        System.out.println("新增结果: " + result + ", ID: " + productInfo.getId());
+        System.out.println("========== add 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - addBatch
+     */
+    @Test
+    public void testServiceAddBatch() {
+        System.out.println("========== 测试 Service addBatch ==========");
+        List<ProductInfo> list = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            int[] skuColor = randomSkuColor();
+            ProductInfo productInfo = new ProductInfo();
+            productInfo.setCode(randomCode());
+            productInfo.setCompanyId("C_BATCH");
+            productInfo.setProductName("Service测试-BATCH-" + i);
+            productInfo.setPrice(BigDecimal.valueOf(100 + i));
+            productInfo.setSkuType(skuColor[0]);
+            productInfo.setColorType(skuColor[1]);
+            productInfo.setStock(10L);
+            productInfo.setStatus(1);
+            list.add(productInfo);
+        }
+
+        Integer result = productInfoService.addBatch(list);
+        System.out.println("批量新增结果: " + result);
+        System.out.println("========== addBatch 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - insertOrUpdateBatch
+     */
+    @Test
+    public void testServiceInsertOrUpdateBatch() {
+        System.out.println("========== 测试 Service insertOrUpdateBatch ==========");
+        List<ProductInfo> list = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            int[] skuColor = randomSkuColor();
+            ProductInfo productInfo = new ProductInfo();
+            productInfo.setCode(randomCode());
+            productInfo.setCompanyId("C_UPSERT");
+            productInfo.setProductName("Service测试-UPSERT-" + i);
+            productInfo.setPrice(BigDecimal.valueOf(200 + i));
+            productInfo.setSkuType(skuColor[0]);
+            productInfo.setColorType(skuColor[1]);
+            productInfo.setStock(20L);
+            productInfo.setStatus(1);
+            list.add(productInfo);
+        }
+
+        Integer result = productInfoService.insertOrUpdateBatch(list);
+        System.out.println("批量新增或更新结果: " + result);
+        System.out.println("========== insertOrUpdateBatch 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - getProductInfoById
+     */
+    @Test
+    public void testServiceGetProductInfoById() {
+        System.out.println("========== 测试 Service getProductInfoById ==========");
+        int[] skuColor = randomSkuColor();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(randomCode());
+        productInfo.setCompanyId("C_ID");
+        productInfo.setProductName("Service测试-ByID");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 查询
+        ProductInfo result = productInfoService.getProductInfoById(productInfo.getId());
+        System.out.println("查询结果: " + result);
+        System.out.println("========== getProductInfoById 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - updateProductInfoById
+     */
+    @Test
+    public void testServiceUpdateProductInfoById() {
+        System.out.println("========== 测试 Service updateProductInfoById ==========");
+        int[] skuColor = randomSkuColor();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(randomCode());
+        productInfo.setCompanyId("C_UPD");
+        productInfo.setProductName("Service测试-Update-BEFORE");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 更新
+        ProductInfo updateBean = new ProductInfo();
+        updateBean.setProductName("Service测试-Update-AFTER");
+        updateBean.setPrice(BigDecimal.valueOf(999.00));
+        updateBean.setStock(999L);
+
+        Integer result = productInfoService.updateProductInfoById(updateBean, productInfo.getId());
+        System.out.println("更新影响行数: " + result);
+
+        // 验证
+        ProductInfo updated = productInfoService.getProductInfoById(productInfo.getId());
+        System.out.println("更新后数据: " + updated);
+        System.out.println("========== updateProductInfoById 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - deleteProductInfoById
+     */
+    @Test
+    public void testServiceDeleteProductInfoById() {
+        System.out.println("========== 测试 Service deleteProductInfoById ==========");
+        int[] skuColor = randomSkuColor();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(randomCode());
+        productInfo.setCompanyId("C_DEL");
+        productInfo.setProductName("Service测试-Delete");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 删除
+        Integer result = productInfoService.deleteProductInfoById(productInfo.getId());
+        System.out.println("删除影响行数: " + result);
+
+        // 验证
+        ProductInfo deleted = productInfoService.getProductInfoById(productInfo.getId());
+        System.out.println("删除后查询结果: " + deleted);
+        System.out.println("========== deleteProductInfoById 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - getProductInfoBySkuTypeAndColorType
+     */
+    @Test
+    public void testServiceGetProductInfoBySkuTypeAndColorType() {
+        System.out.println("========== 测试 Service getProductInfoBySkuTypeAndColorType ==========");
+        int[] skuColor = randomSkuColor();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(randomCode());
+        productInfo.setCompanyId("C_SKU");
+        productInfo.setProductName("Service测试-SkuColor");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 查询
+        ProductInfo result = productInfoService.getProductInfoBySkuTypeAndColorType(skuColor[0], skuColor[1]);
+        System.out.println("查询结果: " + result);
+        System.out.println("========== getProductInfoBySkuTypeAndColorType 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - updateProductInfoBySkuTypeAndColorType
+     */
+    @Test
+    public void testServiceUpdateProductInfoBySkuTypeAndColorType() {
+        System.out.println("========== 测试 Service updateProductInfoBySkuTypeAndColorType ==========");
+        int[] skuColor = randomSkuColor();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(randomCode());
+        productInfo.setCompanyId("C_SKUUPD");
+        productInfo.setProductName("Service测试-SkuColor-BEFORE");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 更新
+        ProductInfo updateBean = new ProductInfo();
+        updateBean.setProductName("Service测试-SkuColor-AFTER");
+        updateBean.setPrice(BigDecimal.valueOf(888.00));
+        updateBean.setStock(888L);
+
+        Integer result = productInfoService.updateProductInfoBySkuTypeAndColorType(updateBean, skuColor[0], skuColor[1]);
+        System.out.println("更新影响行数: " + result);
+
+        // 验证
+        ProductInfo updated = productInfoService.getProductInfoBySkuTypeAndColorType(skuColor[0], skuColor[1]);
+        System.out.println("更新后数据: " + updated);
+        System.out.println("========== updateProductInfoBySkuTypeAndColorType 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - deleteProductInfoBySkuTypeAndColorType
+     */
+    @Test
+    public void testServiceDeleteProductInfoBySkuTypeAndColorType() {
+        System.out.println("========== 测试 Service deleteProductInfoBySkuTypeAndColorType ==========");
+        int[] skuColor = randomSkuColor();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(randomCode());
+        productInfo.setCompanyId("C_SKUDEL");
+        productInfo.setProductName("Service测试-SkuColor-DEL");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 删除
+        Integer result = productInfoService.deleteProductInfoBySkuTypeAndColorType(skuColor[0], skuColor[1]);
+        System.out.println("删除影响行数: " + result);
+
+        // 验证
+        ProductInfo deleted = productInfoService.getProductInfoBySkuTypeAndColorType(skuColor[0], skuColor[1]);
+        System.out.println("删除后查询结果: " + deleted);
+        System.out.println("========== deleteProductInfoBySkuTypeAndColorType 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - getProductInfoByCode
+     */
+    @Test
+    public void testServiceGetProductInfoByCode() {
+        System.out.println("========== 测试 Service getProductInfoByCode ==========");
+        int[] skuColor = randomSkuColor();
+        String code = randomCode();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(code);
+        productInfo.setCompanyId("C_CODE");
+        productInfo.setProductName("Service测试-Code");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 查询
+        ProductInfo result = productInfoService.getProductInfoByCode(code);
+        System.out.println("查询结果: " + result);
+        System.out.println("========== getProductInfoByCode 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - updateProductInfoByCode
+     */
+    @Test
+    public void testServiceUpdateProductInfoByCode() {
+        System.out.println("========== 测试 Service updateProductInfoByCode ==========");
+        int[] skuColor = randomSkuColor();
+        String code = randomCode();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(code);
+        productInfo.setCompanyId("C_CODEUPD");
+        productInfo.setProductName("Service测试-Code-BEFORE");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 更新
+        ProductInfo updateBean = new ProductInfo();
+        updateBean.setProductName("Service测试-Code-AFTER");
+        updateBean.setPrice(BigDecimal.valueOf(777.00));
+        updateBean.setStock(777L);
+
+        Integer result = productInfoService.updateProductInfoByCode(updateBean, code);
+        System.out.println("更新影响行数: " + result);
+
+        // 验证
+        ProductInfo updated = productInfoService.getProductInfoByCode(code);
+        System.out.println("更新后数据: " + updated);
+        System.out.println("========== updateProductInfoByCode 测试完成 ==========\n");
+    }
+
+    /**
+     * 测试 Service - deleteProductInfoByCode
+     */
+    @Test
+    public void testServiceDeleteProductInfoByCode() {
+        System.out.println("========== 测试 Service deleteProductInfoByCode ==========");
+        int[] skuColor = randomSkuColor();
+        String code = randomCode();
+        // 先插入
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setCode(code);
+        productInfo.setCompanyId("C_CODEDEL");
+        productInfo.setProductName("Service测试-Code-DEL");
+        productInfo.setPrice(BigDecimal.valueOf(100.00));
+        productInfo.setSkuType(skuColor[0]);
+        productInfo.setColorType(skuColor[1]);
+        productInfo.setStock(10L);
+        productInfo.setStatus(1);
+        productInfoService.add(productInfo);
+
+        // 删除
+        Integer result = productInfoService.deleteProductInfoByCode(code);
+        System.out.println("删除影响行数: " + result);
+
+        // 验证
+        ProductInfo deleted = productInfoService.getProductInfoByCode(code);
+        System.out.println("删除后查询结果: " + deleted);
+        System.out.println("========== deleteProductInfoByCode 测试完成 ==========\n");
     }
 }
