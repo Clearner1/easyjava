@@ -65,7 +65,7 @@ public class BuildMapper {
                     if (index < keyFieldInfo.size()) {
                         methodName.append("And");
                     }
-                    paraName.append("@Param(" + "\"(" + fieldInfo.getPropertyName() + "\") " + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName());
+                    paraName.append("@Param(" + "\"" + fieldInfo.getPropertyName() + "\") " + fieldInfo.getJavaType() + " " + fieldInfo.getPropertyName());
                     if (index < keyFieldInfo.size()) {
                         paraName.append(", ");
                     }
@@ -76,15 +76,13 @@ public class BuildMapper {
                 bw.newLine();
                 bw.newLine();
                 BuildComments.createFieldComment(bw, "根据" + methodName + "更新");
-                bw.write("\tpublic T updateBy" + methodName + "(@Param(\"bean\") T t, " + paraName + ");");
+                bw.write("\tpublic Integer updateBy" + methodName + "(@Param(\"bean\") T t, " + paraName + ");");
                 bw.newLine();
                 bw.newLine();
                 BuildComments.createFieldComment(bw, "根据" + methodName + "删除");
-                bw.write("\tpublic T deleteBy" + methodName + "(" + paraName + ");");
+                bw.write("\tpublic Integer deleteBy" + methodName + "(" + paraName + ");");
                 bw.newLine();
                 bw.newLine();
-
-
             }
 //            for () {
 //                // 构建字段的注释

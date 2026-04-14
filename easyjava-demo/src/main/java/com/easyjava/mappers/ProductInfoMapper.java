@@ -5,40 +5,56 @@ import org.apache.ibatis.annotations.Param;
 /**
  * @author Zane
  * @Description 商品信息表Mapper查询对象
- * @date 2026/4/13
+ * @date 2026/4/14
  */
 public interface ProductInfoMapper<T, P> extends BaseMapper {
 
 	/**
 	 * 根据Id查询
 	 */
-	public T selectById(@Param("(id") Integer id);
+	public T selectById(@Param("id") Integer id);
 
 	/**
 	 * 根据Id更新
 	 */
-	public T updateById(@Param("bean") T t, @Param("(id") Integer id);
+	public Integer updateById(@Param("bean") T t, @Param("id") Integer id);
 
 	/**
 	 * 根据Id删除
 	 */
-	public T deleteById(@Param("(id") Integer id);
+	public Integer deleteById(@Param("id") Integer id);
 
 
 	/**
-	 * 根据CompanyIdAndCode查询
+	 * 根据SkuTypeAndColorType查询
 	 */
-	public T selectByCompanyIdAndCode(@Param("(companyId") String companyId, @Param("(code") String code);
+	public T selectBySkuTypeAndColorType(@Param("skuType") Integer skuType, @Param("colorType") Integer colorType);
 
 	/**
-	 * 根据CompanyIdAndCode更新
+	 * 根据SkuTypeAndColorType更新
 	 */
-	public T updateByCompanyIdAndCode(@Param("bean") T t, @Param("(companyId") String companyId, @Param("(code") String code);
+	public Integer updateBySkuTypeAndColorType(@Param("bean") T t, @Param("skuType") Integer skuType, @Param("colorType") Integer colorType);
 
 	/**
-	 * 根据CompanyIdAndCode删除
+	 * 根据SkuTypeAndColorType删除
 	 */
-	public T deleteByCompanyIdAndCode(@Param("(companyId") String companyId, @Param("(code") String code);
+	public Integer deleteBySkuTypeAndColorType(@Param("skuType") Integer skuType, @Param("colorType") Integer colorType);
+
+
+	/**
+	 * 根据Code查询
+	 */
+	public T selectByCode(@Param("code") String code);
+
+	/**
+	 * 根据Code更新
+	 */
+	public Integer updateByCode(@Param("bean") T t, @Param("code") String code);
+
+	/**
+	 * 根据Code删除
+	 */
+	public Integer deleteByCode(@Param("code") String code);
 
 
 }
